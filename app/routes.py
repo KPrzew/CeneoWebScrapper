@@ -1,5 +1,35 @@
 from app import app
-from flask import render_template
+from flask import render_template, redirect, url_for
+import requests
+import json
+from bs4 import BeautifulSoup
+import os
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+
+def get_item(ancestor, selector, attribute=None, return_list=False):
+    try:
+        if return_list:
+            return [item.get_text().strip() for item in ancestor.select(selector)]
+        if attribute:
+            return ancestor.select_one(selector)[attribute]
+        return ancestor.select_one(selector).get_text().strip()
+    except (AttributeError, TypeError):
+        return None
+
+selectors = {
+    "author": ["span.user-post__author-name"],
+    "recommendation": ["span.user-post__author-recomendation > em"],
+    "score": ["span.user-post__score-count"],
+    "content": ["div.user-post__text"],
+    "useful": ["button.vote-yes > span"],
+    "useless": ["button.vote-no > span"],
+    "publish_date": ["span.user-post__published > time:nth-child(1)", "datetime"],
+    "purchase_date": ["span.user-post__published > time:nth-child(2)", "datetime"],
+    "pros": ["div[class$=positives]~ div.review-feature__item", None, True],
+    "cons": ["div[class$=negatives]~ div.review-feature__item", None, True]
+}
 
 @app.route('/')
 @app.route('/index')
@@ -11,11 +41,9 @@ def index(name="Hello World"):
 def extract(product_id):
     url = f"https://www.ceneo.pl/{item_id}#tab=reviews"
     all_opinions=[]
-
     while(url):
         response=requests.get(url)
         page=BeautifulSoup(response.text, 'html.parser')
-
         opinions = page.select("div.js_product-review")
         for opinion in opinions:
             single_opinion = {
@@ -24,20 +52,17 @@ def extract(product_id):
             }
             single_opinion["opinion_id"] = opinion["data-entry-id"]
             all_opinions.append(single_opinion)
-
         try:
             url = "https://www.ceneo.pl/" + get_item(opinion,"a.pagination__next","href")
         except TypeError:
             url = None
-    with open("./opinions/63490289.json", "w",encoding="UTF-8") as jf:
+    with open(f"app/opinions/{product_id}.json", "w",encoding="UTF-8") as jf:
         json.dump(all_opinions, jf, indent=4, ensure_ascii=False)
     return redirect (url_for("product", product_id = product_id))
 
-
-
 @app.route('/products')
 def products():
-    products = [filename.split(".")[0] for filename in os.listdir("opinions")]
+    products = [filename.split(".")[0] for filename in os.listdir("app/opinions")]
     return render_template("products.html.jinja", products=products)
 
 @app.route('/about')
@@ -46,8 +71,7 @@ def about():
 
 @app.route('app/product/<product_id>')
 def product(product_id):
-    opinions = pd.read_json(f"opinions/{product_id}.json")
-    print(opinions)
+    opinions = pd.read_json(f"app/opinions/{product_id}.json")
     opinions.score = opinions.score.map(lambda x: float(x.split("/")[0].replace(',','.')))
     stats = {
         "opinions_count" : len(opinions.index),
@@ -55,7 +79,6 @@ def product(product_id):
         "cons_count" : opinions.cons.map(bool).sum(),
         "average_score" : opinions.score.mean().round(2)
     }
-
     recomendation = opinions.recomendation.value_counts(dropna=False).sort_index().reindex(["Nie polecam", "Polecam", None])
     recomendation.plot.pie(
         label="",
