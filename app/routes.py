@@ -20,7 +20,7 @@ def get_item(ancestor, selector, attribute=None, return_list=False):
 
 selectors = {
     "author": ["span.user-post__author-name"],
-    "recommendation": ["span.user-post__author-recomendation > em"],
+    "recommendation": ["span.user-post__author-recommendation > em"],
     "score": ["span.user-post__score-count"],
     "content": ["div.user-post__text"],
     "useful": ["button.vote-yes > span"],
@@ -39,7 +39,7 @@ def index(name="Hello World"):
 
 @app.route('/extract/<product_id>')
 def extract(product_id):
-    url = f"https://www.ceneo.pl/{item_id}#tab=reviews"
+    url = f"https://www.ceneo.pl/{product_id}#tab=reviews"
     all_opinions=[]
     while(url):
         response=requests.get(url)
@@ -53,7 +53,7 @@ def extract(product_id):
             single_opinion["opinion_id"] = opinion["data-entry-id"]
             all_opinions.append(single_opinion)
         try:
-            url = "https://www.ceneo.pl/" + get_item(opinion,"a.pagination__next","href")
+            url = f"https://www.ceneo.pl/{product_id}" + get_item(page,"a.pagination__next","href")
         except TypeError:
             url = None
     with open(f"app/opinions/{product_id}.json", "w",encoding="UTF-8") as jf:
@@ -67,9 +67,9 @@ def products():
 
 @app.route('/about')
 def about():
-    pass
+    return render_template("about.html.jinja")
 
-@app.route('app/product/<product_id>')
+@app.route('/product/<product_id>')
 def product(product_id):
     opinions = pd.read_json(f"app/opinions/{product_id}.json")
     opinions.score = opinions.score.map(lambda x: float(x.split("/")[0].replace(',','.')))
@@ -79,15 +79,15 @@ def product(product_id):
         "cons_count" : opinions.cons.map(bool).sum(),
         "average_score" : opinions.score.mean().round(2)
     }
-    recomendation = opinions.recomendation.value_counts(dropna=False).sort_index().reindex(["Nie polecam", "Polecam", None])
-    recomendation.plot.pie(
+    recommendation = opinions.recommendation.value_counts(dropna=False).sort_index().reindex(["Nie polecam", "Polecam", None])
+    recommendation.plot.pie(
         label="",
         autopct="%1.1f%%",
         colors=['forestgreen', 'lightskyblue', 'crimson'],
         labels=["Nie polecam", "Polecam", "Nie mam zdania"]
     )
     plt.title("Rekomendacja")
-    plt.savefig(f"app/static/plots/{product_id}_recomendation.png")
+    plt.savefig(f"app/static/plots/{product_id}_recommendation.png")
     plt.close()
 
     score = opinions.score.value_counts().sort_index().reindex(list(np.arange(0,5.5,0.5)), fill_value=(0))
