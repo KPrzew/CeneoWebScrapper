@@ -22,7 +22,18 @@ class Opinion:
         pass
 
     def to_dict(self):
-        pass
+        return {
+            "score": self.score,
+            "recomendation": self.recommendation,
+            "author": self.author,
+            "useful": self.useful,
+            "useless": self.useless,
+            "content": self.content,
+            "pros": self.pros,
+            "cons": self.cons,
+            "purchase_date": self.purchase,
+            "publish_date": self.publish
+        }
 
     def extract_opinion(self, opinion):
         for key, value in selectors.items():

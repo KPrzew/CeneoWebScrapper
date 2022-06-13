@@ -15,6 +15,9 @@ class Product:
         self.cons_count=cons_count
         self.average_score=average_score
         return self
+
+    def __str__(self):
+        return self.product_name
     
 
     def extract_product(self, product_id):
