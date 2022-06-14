@@ -13,13 +13,12 @@ class Opinion:
         self.cons=cons
         self.purchase=purchase_date
         self.publish=publish_date
-        return self
 
-    def __str__():
-        pass
+    def __str__(self):
+        return f"score: {self.score}, recommendation: {self.recommendation}, author: {self.author}, votes up: {self.useful}, votes down: {self.useless}, content: {self.content}, pros: {self.pros}, cons: {self.cons}, purchase date: {self.purchase}, publish date: {self.publish}"
 
-    def __repr__():
-        pass
+    def __repr__(self):
+        return f"score: {self.score}, recommendation: {self.recommendation}, author: {self.author}, votes up: {self.useful}, votes down: {self.useless}, content: {self.content}, pros: {self.pros}, cons: {self.cons}, purchase date: {self.purchase}, publish date: {self.publish}"
 
     def to_dict(self):
         return {

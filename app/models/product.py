@@ -14,11 +14,12 @@ class Product:
         self.pros_count=pros_count
         self.cons_count=cons_count
         self.average_score=average_score
-        return self
 
     def __str__(self):
-        return self.product_name
+        return f"Product name{self.product_naem}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
     
+    def __repr__(self):
+        return f"Product name{self.product_naem}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
 
     def extract_product(self, product_id):
         url = f"https://www.ceneo.pl/{self.product_id}#tab=reviews"
