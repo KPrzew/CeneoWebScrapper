@@ -15,11 +15,10 @@ class Opinion:
         self.publish=publish_date
 
     def __str__(self):
-        return f"score: {self.score}, recommendation: {self.recommendation}, author: {self.author}, votes up: {self.useful}, votes down: {self.useless}, content: {self.content}, pros: {self.pros}, cons: {self.cons}, purchase date: {self.purchase}, publish date: {self.publish}"
+        return f"opinion_id: {self.opinion_id}<br>" + "<br>".join(f"{key}: {str(getattr(self, key))}" for key in selectors.keys())
 
     def __repr__(self):
-        return f"score: {self.score}, recommendation: {self.recommendation}, author: {self.author}, votes up: {self.useful}, votes down: {self.useless}, content: {self.content}, pros: {self.pros}, cons: {self.cons}, purchase date: {self.purchase}, publish date: {self.publish}"
-
+        return f"Opinion(opinion_id={self.opinion_id}, " + ", ".join(f"{key}={str(getattr(self, key))}" for key in selectors.keys()) + ")"
     def to_dict(self):
         return {
             "score": self.score,
