@@ -2,10 +2,11 @@ from app import app
 from flask import render_template, redirect, url_for, request
 import os
 from app.models.product import Product
+from app.mdtohtml import tohtml
 
 @app.route('/')
 def index():
-    return render_template("index.html.jinja")
+    return render_template("index.html.jinja", template=tohtml())
 
 @app.route('/extract', methods=["POST", "GET"])
 def extract():
@@ -13,8 +14,8 @@ def extract():
         product_id = request.form.get("product_id")
         product=Product(product_id)
         product.extract_product().process_stats().draw_charts()
-        product.save_opinions()
         product.save_stats()
+        product.save_opinions()
         
         return redirect(url_for("product", product_id = product_id))
     else:
@@ -35,4 +36,4 @@ def product(product_id):
     product.read_from_json()
     opinions = product.opinions_do_df()
     stats = product.stats_to_dict()
-    return render_template("products.html.jinja", stats=stats, product_id=product_id, opinions=opinions)
+    return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions)

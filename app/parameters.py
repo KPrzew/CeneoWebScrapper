@@ -1,6 +1,6 @@
 selectors = {
     "author": ["span.user-post__author-name"],
-    "recommendation": ["span.user-post__author-recommendation > em"],
+    "recommendation": ["span.user-post__author-recomendation > em"],
     "score": ["span.user-post__score-count"],
     "content": ["div.user-post__text"],
     "useful": ["button.vote-yes > span"],

@@ -2,7 +2,7 @@ from app.utils import get_item
 from app.parameters import selectors
 
 class Opinion:
-    def __init__(self,score,recommendation,author,useful,useless,content,pros,cons,purchase_date,publish_date):
+    def __init__(self,score=0,recommendation=None,author="",useful=0,useless=0,content="",pros=[],cons=[],purchase_date=None,publish_date=None):
         self.score=score
         self.recommendation=recommendation
         self.author=author
@@ -22,7 +22,7 @@ class Opinion:
     def to_dict(self):
         return {
             "score": self.score,
-            "recomendation": self.recommendation,
+            "recommendation": self.recommendation,
             "author": self.author,
             "useful": self.useful,
             "useless": self.useless,
