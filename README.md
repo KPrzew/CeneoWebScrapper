@@ -2,6 +2,7 @@
 
 ## Struktura opinii w serwisie Ceneo [Ceneo.pl](https://www.ceneo.pl/)
 
+
 |Składowa|Selektor|Nazwa zmiennej|Typ zmiennej|
 |--------|--------|--------------|------------|
 |opinia|div.js_product-review|opinion|obj|
@@ -20,7 +21,7 @@
 
 ## Biblioteki wykorzystane w projekcie
 |Biblioteka|Do czego była wykorzystywana|
-|----------|------------------|
+|----------|----------------------------|
 |Beautiful Soup|Analiza plikow html|
 |requests|Żądania HTTP|
 |Jinja|Szablony|

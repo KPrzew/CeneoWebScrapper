@@ -19,10 +19,10 @@ class Product:
         self.average_score=average_score
 
     def __str__(self):
-        return f"Product name{self.product_naem}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
+        return f"Product name{self.product_name}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
     
     def __repr__(self):
-        return f"Product name{self.product_naem}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
+        return f"Product name{self.product_name}, opinions: {self.opinions}, numbers of opinions: {self.opinions_count}, number of cons: {self.cons_count}, number of pros: {self.pros_count}"
 
     def to_dict(self):
         return {
@@ -77,7 +77,9 @@ class Product:
         self.average_score = self.opinions_do_df().score.mean().round(2)
         return self
 
-    def draw_charts(self): 
+    def draw_charts(self):
+        if os.path.exists("app/static/plots")==False:
+            os.makedirs("app/static/plots") 
         recommendation = self.opinions_do_df().recommendation.value_counts(dropna = False).sort_index().reindex(["Nie polecam", "Polecam", None])
         recommendation.plot.pie(
             label="", 
@@ -99,13 +101,13 @@ class Product:
         plt.close()
 
     def save_opinions(self):
-        if not os.path.exists("app/opinions"):
+        if os.path.exists("app/opinions")==False:
             os.makedirs("app/opinions")
         with open(f"app/opinions/{self.product_id}.json", "w",encoding="UTF-8") as jf:
             json.dump(self.opinions_to_dict(), jf, indent=4, ensure_ascii=False)
         
     def save_stats(self):
-        if not os.path.exists("app/products"):
+        if os.path.exists("app/products")==False:
                 os.makedirs("app/products")
         with open(f"app/products/{self.product_id}.json", "w",encoding="UTF-8") as jf:
             json.dump(self.stats_to_dict(), jf, indent=4, ensure_ascii=False)
